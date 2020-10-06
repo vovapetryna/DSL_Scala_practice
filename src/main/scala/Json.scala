@@ -32,6 +32,9 @@ object Encoder extends SimpleEncoder {
 }
 
 trait SimpleEncoder {
+  implicit val noneEncoder: Encoder[Null] =
+    Encoder.fromFunction(value => Json.None)
+
   implicit val numEncoder: Encoder[Int] =
     Encoder.fromFunction(value => Json.Num(value))
 

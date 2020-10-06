@@ -7,12 +7,13 @@ object main extends App {
 
   val nums: Json = List(2, 3)
   val car: Json = Car(200, 8.5, "AA101BB")
-  val parsedNums: Option[List[Int]] = convertFromJson[List[Int]](nums)
+  val parsedNums = convertFromJson[List[Int]](nums)
 
-  val myCar: Option[Car] = convertFromJson[Car](car)
-  val person: Json = Person("Vova", "Petryna", 19, List(myCar.getOrElse(emptyCar)))
+  val myCar = convertFromJson[Car](car)
+  val person: Json =
+    Person("Vova", "Petryna", 19, List(myCar.getOrElse(emptyCar)))
 
-  val decodePerson: Option[Person] = convertFromJson[Person](person)
+  val decodePerson = convertFromJson[Person](person)
 
   println(nums)
   println(parsedNums)
@@ -22,5 +23,22 @@ object main extends App {
   println()
   println(person)
   println(decodePerson)
+
+  val exampleNotJson = "{ maxSpeed : 200, fuelConsumption : 8.5, sign : AA101BB}"
+
+  val parser =
+    for {
+      maxSpeed <- DefaultParsers.KeyInt
+      fuel <- DefaultParsers.KeyDouble
+      sign <- DefaultParsers.KeyString
+    } yield Json.Obj(
+      Map(
+        maxSpeed._1 -> maxSpeed._2,
+        fuel._1 -> fuel._2,
+        sign._1 -> sign._2
+      )
+    )
+
+  println(parser.parse(exampleNotJson))
 
 }
