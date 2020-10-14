@@ -4,9 +4,7 @@ sealed trait Json {
 }
 
 object Json {
-  final case class Num(value: Int) extends Json
-
-  final case class Real(value: Double) extends Json
+  final case class Num(value: BigDecimal) extends Json
 
   final case class Str(value: String) extends Json
 
@@ -14,7 +12,11 @@ object Json {
 
   final case class Arr(objs: List[Json]) extends Json
 
+  final case class Bool(value: Boolean) extends Json
+
   final case object None extends Json
+
+  final case class Delim(value: Char) extends Json
 
   def convertFromJson[B](x: Json)(implicit decoder: Decoder[B]): Option[B] =
     decoder.decode(x)
@@ -32,14 +34,17 @@ object Encoder extends SimpleEncoder {
 }
 
 trait SimpleEncoder {
+  implicit val delimEncoder: Encoder[Char] =
+    Encoder.fromFunction(value => Json.Delim(value))
+
+  implicit val booleanEncoder: Encoder[Boolean] =
+    Encoder.fromFunction(value => Json.Bool(value))
+
   implicit val noneEncoder: Encoder[Null] =
-    Encoder.fromFunction(value => Json.None)
+    Encoder.fromFunction(_ => Json.None)
 
-  implicit val numEncoder: Encoder[Int] =
+  implicit val numEncoder: Encoder[BigDecimal] =
     Encoder.fromFunction(value => Json.Num(value))
-
-  implicit val realEncoder: Encoder[Double] =
-    Encoder.fromFunction(value => Json.Real(value))
 
   implicit val strEncoder: Encoder[String] =
     Encoder.fromFunction(value => Json.Str(value))
@@ -67,11 +72,8 @@ object Decoder extends SimpleDecoder {
 }
 
 trait SimpleDecoder {
-  implicit val numDecoder: Decoder[Int] =
+  implicit val numDecoder: Decoder[BigDecimal] =
     Decoder.fromPartialFunction { case Json.Num(value) => value }
-
-  implicit val realDecoder: Decoder[Double] =
-    Decoder.fromPartialFunction { case Json.Real(value) => value }
 
   implicit val stringDecoder: Decoder[String] =
     Decoder.fromPartialFunction { case Json.Str(value) => value }

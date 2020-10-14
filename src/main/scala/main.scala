@@ -3,11 +3,9 @@ import externalDecoder.{JsonToCarDecoder, JsonToPersonDecoder}
 import externalEncoder.{personToJsonEncoder, carToJsonEncoder}
 
 object main extends App {
-  val emptyCar = Car(0, 0, "")
+  val emptyCar = Car(0, "")
 
-  val nums: Json = List(2, 3)
-  val car: Json = Car(200, 8.5, "AA101BB")
-  val parsedNums = convertFromJson[List[Int]](nums)
+  val car: Json = Car(200, "AA101BB")
 
   val myCar = convertFromJson[Car](car)
   val person: Json =
@@ -15,30 +13,14 @@ object main extends App {
 
   val decodePerson = convertFromJson[Person](person)
 
-  println(nums)
-  println(parsedNums)
-  println()
-  println(car)
-  println(myCar)
-  println()
-  println(person)
-  println(decodePerson)
+  val parsedNumber = ".0"
+  println(parsedNumber)
 
-  val exampleNotJson = "{ maxSpeed : 200, fuelConsumption : 8.5, sign : AA101BB}"
+  val analyzed = analyzer.string_lex.build("\"hello\" another text")
+  println(analyzed)
 
-  val parser =
-    for {
-      maxSpeed <- DefaultParsers.KeyInt
-      fuel <- DefaultParsers.KeyDouble
-      sign <- DefaultParsers.KeyString
-    } yield Json.Obj(
-      Map(
-        maxSpeed._1 -> maxSpeed._2,
-        fuel._1 -> fuel._2,
-        sign._1 -> sign._2
-      )
-    )
+  val lixyTest = LexicalAnalyzer
+    .build("{ \"vova\" : \"test\", \"petryna\" : 123.0, \"boolean\" : true, \"nullable\" : null}")
 
-  println(parser.parse(exampleNotJson))
-
+  println(lixyTest)
 }
