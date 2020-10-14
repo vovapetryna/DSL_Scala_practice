@@ -14,7 +14,7 @@ object Json {
 
   final case class Bool(value: Boolean) extends Json
 
-  final case object None extends Json
+  final case object JNone extends Json
 
   final case class Delim(value: Char) extends Json
 
@@ -23,6 +23,17 @@ object Json {
 
   implicit def convertToJson[B](x: B)(implicit encoder: Encoder[B]): Json =
     encoder.encode(x)
+
+  def jRead[B](str: String)(implicit decoder: Decoder[B]): Option[B] = {
+    LexicalAnalyzer.build(str) match {
+      case Right(tags) =>
+        ContextAnalyzer.build(tags) match {
+          case Right(jValue) => decoder.decode(jValue)
+          case Left(_) => None
+        }
+      case Left(_) => None
+    }
+  }
 }
 
 trait Encoder[T] {
@@ -41,7 +52,7 @@ trait SimpleEncoder {
     Encoder.fromFunction(value => Json.Bool(value))
 
   implicit val noneEncoder: Encoder[Null] =
-    Encoder.fromFunction(_ => Json.None)
+    Encoder.fromFunction(_ => Json.JNone)
 
   implicit val numEncoder: Encoder[BigDecimal] =
     Encoder.fromFunction(value => Json.Num(value))

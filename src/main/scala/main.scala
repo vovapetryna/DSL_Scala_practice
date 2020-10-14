@@ -1,6 +1,5 @@
-import Json.{convertFromJson, convertToJson}
-import externalDecoder.{JsonToCarDecoder, JsonToPersonDecoder}
-import externalEncoder.{personToJsonEncoder, carToJsonEncoder}
+import Json.jRead
+import externalDecoder.JsonToPersonDecoder
 
 object main extends App {
 
@@ -28,10 +27,7 @@ object main extends App {
       |}
       |""".stripMargin
 
-  val Right(analyzed) = LexicalAnalyzer.build(PersonObjJson)
+  val obj = jRead[Person](PersonObjJson)
 
-  val parsed = ContextAnalyzer
-    .build(analyzed)
-
-  println(parsed)
+  println(obj)
 }

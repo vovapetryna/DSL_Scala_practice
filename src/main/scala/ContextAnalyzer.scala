@@ -1,4 +1,4 @@
-import Json.{Obj, Str, None, Num, Delim, Bool, Arr}
+import Json.{Obj, Str, JNone, Num, Delim, Bool, Arr}
 
 object ContextAnalyzer {
   def build(tokens: List[Json]): Either[String, Json] = {
@@ -30,8 +30,8 @@ object ContextAnalyzer {
         buildObj(tail, Json.Obj(curObj.fields + (field -> value)))
       case Str(field) :: Delim(':') :: (value: Bool) :: tail =>
         buildObj(tail, Obj(curObj.fields + (field -> value)))
-      case Str(field) :: Delim(':') :: None :: tail =>
-        buildObj(tail, Json.Obj(curObj.fields + (field -> None)))
+      case Str(field) :: Delim(':') :: JNone :: tail =>
+        buildObj(tail, Json.Obj(curObj.fields + (field -> JNone)))
       case Str(field) :: Delim(':') :: Delim('{') :: tail =>
         buildObj(tail, Obj(Map())) match {
           case Right((newObj, rest)) =>
@@ -59,7 +59,7 @@ object ContextAnalyzer {
       case (value: Str) :: tail => buildArr(tail, Arr(value :: curArr.objs))
       case (value: Num) :: tail => buildArr(tail, Arr(value :: curArr.objs))
       case (value: Bool) :: tail => buildArr(tail, Arr(value :: curArr.objs))
-      case None :: tail => buildArr(tail, Arr(None :: curArr.objs))
+      case JNone :: tail => buildArr(tail, Arr(JNone :: curArr.objs))
       case Delim('{') :: tail =>
         buildObj(tail, Obj(Map())) match {
           case Right((newObj, rest)) => buildArr(rest, Arr(newObj :: curArr.objs))

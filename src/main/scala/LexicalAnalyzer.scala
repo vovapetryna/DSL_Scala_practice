@@ -6,7 +6,7 @@ import scala.util.matching.Regex
 object JSyntax {
   val QUOTE = "\""
 
-  val delimiterRegex: Regex = """([\{\} ,:\[\]])(.*)""".r
+  val delimiterRegex: Regex = """([{} ,:\[\]])(.*)""".r
   val nRegex: Regex = """([+-]?\d+\.*\d*)(.*)""".r
   val boolRegex: Regex = """(true|false)(.*)""".r
 }
@@ -42,7 +42,7 @@ object analyzer {
     }
 
   def lex_null: JAnalyzer[Json] = JAnalyzer[Json] { (str: String) =>
-      if (str.startsWith("null")) Right((Json.None, str.drop(4)))
+      if (str.startsWith("null")) Right((Json.JNone, str.drop(4)))
       else Left("Not a null literal")
     }
 
