@@ -47,6 +47,7 @@ object analyzer {
     }
 
   def lex_separator: JAnalyzer[Json] = JAnalyzer[Json] {
+      case JSyntax.delimiterRegex(" ", _) => Left("empty delimiter")
       case JSyntax.delimiterRegex(value, rest) => Right((value(0), rest))
       case _  => Left("Delimiter not found")
     }
@@ -64,11 +65,11 @@ object LexicalAnalyzer {
         } yield (value, rest)
 
         lex_step match {
-          case Nil => Left("Lexy analysing error")
+          case Nil => auxiliaryBuild(str.drop(1), tokens)
           case (value, rest) :: _ => auxiliaryBuild(rest, value :: tokens)
         }
       }
     }
-    auxiliaryBuild(str, Nil)
+    auxiliaryBuild(str.filter(_ >= ' '), Nil)
   }
 }

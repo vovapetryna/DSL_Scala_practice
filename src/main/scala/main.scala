@@ -3,24 +3,35 @@ import externalDecoder.{JsonToCarDecoder, JsonToPersonDecoder}
 import externalEncoder.{personToJsonEncoder, carToJsonEncoder}
 
 object main extends App {
-  val emptyCar = Car(0, "")
 
-  val car: Json = Car(200, "AA101BB")
+  val carArrJson =
+    """[
+      |{
+      |  "maxSpeed" : 250,
+      |  "sign" : "AA0000BB"
+      |},
+      |{
+      |  "maxSpeed" : 120,
+      |  "sign" : "AA0001BB"
+      |}
+      |]
+      |""".stripMargin
 
-  val myCar = convertFromJson[Car](car)
-  val person: Json =
-    Person("Vova", "Petryna", 19, List(myCar.getOrElse(emptyCar)))
+  val PersonObjJson =
+    """
+      |{
+      |  "name" : "TestName",
+      |  "surname" : "TestSurname",
+      |  "age" : 100,
+      |  "cars" : """.stripMargin + carArrJson +
+      """
+      |}
+      |""".stripMargin
 
-  val decodePerson = convertFromJson[Person](person)
+  val Right(analyzed) = LexicalAnalyzer.build(PersonObjJson)
 
-  val parsedNumber = ".0"
-  println(parsedNumber)
+  val parsed = ContextAnalyzer
+    .build(analyzed)
 
-  val analyzed = analyzer.string_lex.build("\"hello\" another text")
-  println(analyzed)
-
-  val lixyTest = LexicalAnalyzer
-    .build("{ \"vova\" : \"test\", \"petryna\" : 123.0, \"boolean\" : true, \"nullable\" : null}")
-
-  println(lixyTest)
+  println(parsed)
 }
